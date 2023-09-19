@@ -74,4 +74,26 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public User(
+        final String username,
+        final String password,
+        final String email,
+        final String fullname,
+        final UserEnum role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.fullname = fullname;
+        this.role = role;
+    }
+
+    public static User of(
+        final String username,
+        final String password,
+        final String email,
+        final String fullname,
+        final UserEnum role) {
+        return new User(username, password, email, fullname, role);
+    }
 }
