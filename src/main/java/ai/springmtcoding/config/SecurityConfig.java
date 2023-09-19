@@ -1,6 +1,9 @@
 package ai.springmtcoding.config;
 
 import ai.springmtcoding.domain.user.UserEnum;
+import ai.springmtcoding.dto.ResponseDto;
+import ai.springmtcoding.util.CustomResponseUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,16 +43,13 @@ public class SecurityConfig {
 
         // 인증 실패
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
-//            CustomResponseUtil.fail(response, "로그인을 진행해 주세요.", HttpStatus.UNAUTHORIZED);
-            response.setContentType("application/json; charset=UTF-8");
-            response.setStatus(403);
-            response.getWriter().println("error");
+            CustomResponseUtil.fail(response, "로그인을 진행해 주세요.", HttpStatus.UNAUTHORIZED);
         });
 
         // 권한 실패
-//        http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
-//            CustomResponseUtil.fail(response, "권한이 없습니다.", HttpStatus.FORBIDDEN);
-//        });
+        http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
+            CustomResponseUtil.fail(response, "권한이 없습니다.", HttpStatus.FORBIDDEN);
+        });
 
         http.authorizeRequests()
             .antMatchers("/api/s/**").authenticated()

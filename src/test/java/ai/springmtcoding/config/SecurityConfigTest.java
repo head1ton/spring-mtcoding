@@ -32,12 +32,21 @@ class SecurityConfigTest {
         System.out.println("responseBody = " + responseBody);
         System.out.println("httpStatusCode = " + httpStatusCode);
 
-        assertThat(httpStatusCode).isEqualTo(403);
+        assertThat(httpStatusCode).isEqualTo(401);
     }
 
     @Test
     @DisplayName("authorization_test")
     public void authorization_test() throws Exception {
 
+        ResultActions resultActions = mvc.perform(
+            get("/api/admin/hello")
+        );
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        int httpStatusCode = resultActions.andReturn().getResponse().getStatus();
+        System.out.println("responseBody = " + responseBody);
+        System.out.println("httpStatusCode = " + httpStatusCode);
+
+        assertThat(httpStatusCode).isEqualTo(401);
     }
 }
