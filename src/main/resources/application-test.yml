@@ -21,4 +21,4 @@ spring:
 
 logging:
   level:
-    '[ai.springmtcoding]': DEBUG
+    ai.springmtcoding: DEBUG

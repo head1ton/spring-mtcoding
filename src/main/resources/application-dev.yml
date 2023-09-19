@@ -29,5 +29,5 @@ spring:
 
 logging:
   level:
-    '[ai.springmtcoding]': DEBUG
-    '[org.hibernate.type]': TRACE
+    ai.springmtcoding: DEBUG
+    org.hibernate.type: TRACE
