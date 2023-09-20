@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class DummyObject {
 
-    protected User newUser(String username, String fullname) {
+    protected static User newUser(String username, String fullname) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encPassword = passwordEncoder.encode("1234");
         return User.builder()
