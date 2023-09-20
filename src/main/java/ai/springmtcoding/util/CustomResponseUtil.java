@@ -12,7 +12,7 @@ public class CustomResponseUtil {
     public static void success(HttpServletResponse response, Object dto) {
         try {
             ObjectMapper om = new ObjectMapper();
-            ResponseDto<Object> responseDto = new ResponseDto<>(-1, "로그인 성공", dto);
+            ResponseDto<Object> responseDto = new ResponseDto<>(1, "로그인 성공", dto);
             String responseBody = om.writeValueAsString(responseDto);
             response.setContentType("application/json; charset=UTF-8");
             response.setStatus(200);
