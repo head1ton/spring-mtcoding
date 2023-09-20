@@ -2,6 +2,7 @@ package ai.springmtcoding.handler;
 
 import ai.springmtcoding.dto.ResponseDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
+import ai.springmtcoding.handler.ex.CustomForbiddenException;
 import ai.springmtcoding.handler.ex.CustomValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,13 @@ public class CustomExceptionHandler {
         log.error(e.getMessage());
         return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null),
             HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomForbiddenException.class)
+    public ResponseEntity<?> fobiddenException(CustomForbiddenException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null),
+            HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(CustomValidationException.class)

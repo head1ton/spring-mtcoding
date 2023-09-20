@@ -1,6 +1,7 @@
 package ai.springmtcoding.config;
 
 import ai.springmtcoding.config.jwt.JwtAuthenticationFilter;
+import ai.springmtcoding.config.jwt.JwtAuthorizationFilter;
 import ai.springmtcoding.domain.user.UserEnum;
 import ai.springmtcoding.dto.ResponseDto;
 import ai.springmtcoding.util.CustomResponseUtil;
@@ -71,6 +72,7 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = builder.getSharedObject(
                 AuthenticationManager.class);
             builder.addFilter(new JwtAuthenticationFilter(authenticationManager));
+            builder.addFilter(new JwtAuthorizationFilter(authenticationManager));
             super.configure(builder);
         }
     }
