@@ -1,5 +1,6 @@
 package ai.springmtcoding.config;
 
+import ai.springmtcoding.config.jwt.JwtAuthenticationFilter;
 import ai.springmtcoding.domain.user.UserEnum;
 import ai.springmtcoding.dto.ResponseDto;
 import ai.springmtcoding.util.CustomResponseUtil;
@@ -8,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -39,7 +42,7 @@ public class SecurityConfig {
         http.httpBasic().disable(); // httpBasic은 브라우저가 팝업창을 이용해서 사용자 인증
 
         // 필터 적용
-//        http.apply(new CustomSecurityFilterManager());
+        http.apply(new CustomSecurityFilterManager());
 
         // 인증 실패
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
@@ -57,6 +60,19 @@ public class SecurityConfig {
             .anyRequest().permitAll();
 
         return http.build();
+    }
+
+    // JWT 필터 등록이 필요함
+    public class CustomSecurityFilterManager extends
+        AbstractHttpConfigurer<CustomSecurityFilterManager, HttpSecurity> {
+
+        @Override
+        public void configure(final HttpSecurity builder) throws Exception {
+            AuthenticationManager authenticationManager = builder.getSharedObject(
+                AuthenticationManager.class);
+            builder.addFilter(new JwtAuthenticationFilter(authenticationManager));
+            super.configure(builder);
+        }
     }
 
     public CorsConfigurationSource configurationSource() {
