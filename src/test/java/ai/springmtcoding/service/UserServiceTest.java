@@ -33,8 +33,8 @@ class UserServiceTest extends DummyObject {
 
     @Mock
     private UserRepository userRepository;
-//    @Spy
-//    private BCryptPasswordEncoder passwordEncoder;
+    @Spy
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Test
     @DisplayName("join_test")

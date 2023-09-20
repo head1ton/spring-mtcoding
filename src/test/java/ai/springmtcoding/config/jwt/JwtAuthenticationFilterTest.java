@@ -22,10 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+@Transactional
 class JwtAuthenticationFilterTest extends DummyObject {
 
     @Autowired
@@ -70,7 +72,25 @@ class JwtAuthenticationFilterTest extends DummyObject {
     @Test
     @DisplayName("unsuccessfulAuthentication_test")
     public void unsuccessfulAuthentication_test() throws Exception {
+        LoginReqDto loginReqDto = new LoginReqDto();
+        loginReqDto.setUsername("test");
+        loginReqDto.setPassword("12345");   // 비밀번호 틀리게
 
+        String requestBody = om.writeValueAsString(loginReqDto);
+        System.out.println("requestBody = " + requestBody);
+
+        ResultActions resultActions = mvc.perform(
+            post("/api/login")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse()
+                                           .getContentAsString(StandardCharsets.UTF_8);
+        System.out.println("responseBody = " + responseBody);
+
+        String jwtToken = resultActions.andReturn().getResponse().getHeader(JwtVO.HEADER);
+        System.out.println("jwtToken = " + jwtToken);
+
+        resultActions.andExpect(status().isUnauthorized());
     }
 
 }
