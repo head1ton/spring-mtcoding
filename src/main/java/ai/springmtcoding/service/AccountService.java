@@ -1,10 +1,14 @@
 package ai.springmtcoding.service;
 
-import ai.springmtcoding.config.auth.LoginUser;
 import ai.springmtcoding.domain.account.Account;
 import ai.springmtcoding.domain.account.AccountRepository;
+import ai.springmtcoding.domain.transaction.Transaction;
+import ai.springmtcoding.domain.transaction.TransactionEnum;
+import ai.springmtcoding.domain.transaction.TransactionRepository;
 import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositRespDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountListRespDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
@@ -12,11 +16,8 @@ import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RequiredArgsConstructor
 @Service
@@ -25,6 +26,7 @@ public class AccountService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
     // 고객별 계좌목록 보기
     public AccountListRespDto accountList_user(Long userId) {
@@ -66,4 +68,39 @@ public class AccountService {
 
         accountRepository.deleteById(accountPS.getId());
     }
+
+    @Transactional
+    public AccountDepositRespDto accountDeposit(AccountDepositReqDto accountDepositReqDto) {
+        // 0원 체크
+        if (accountDepositReqDto.getAmount() <= 0L) {
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        // 입금 계좌 확인
+        Account depositAccountPS = accountRepository.findByNumber(accountDepositReqDto.getNumber())
+                                                    .orElseThrow(
+                                                        () -> new CustomApiException(
+                                                            "계좌를 찾을 수 없습니다."));
+
+        // 입금 (해당 계좌 balance 조정 - update 문
+        depositAccountPS.deposit(accountDepositReqDto.getAmount());
+
+        // 거래 내역
+        Transaction transaction = Transaction.builder()
+                                             .depositAccount(depositAccountPS)
+                                             .withdrawAccount(null)
+                                             .depositAccountBalance(depositAccountPS.getBalance())
+                                             .withdrawAccountBalance(null)
+                                             .amount(accountDepositReqDto.getAmount())
+                                             .gubun(TransactionEnum.DEPOSIT)
+                                             .sender("ATM")
+                                             .receiver(accountDepositReqDto.getNumber() + "")
+                                             .tel(accountDepositReqDto.getTel())
+                                             .build();
+
+        Transaction transactionPS = transactionRepository.save(transaction);
+
+        return new AccountDepositRespDto(depositAccountPS, transactionPS);
+    }
+
 }

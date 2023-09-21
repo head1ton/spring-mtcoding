@@ -69,7 +69,7 @@ public class RegexTest {
     @DisplayName("account_gubun_test1")
     public void account_gubun_test1() throws Exception {
         String gubun = "DEPOSIT";
-        boolean result = Pattern.matches("^[DELPOSIT]$", gubun);
+        boolean result = Pattern.matches("^(DELPOSIT)$", gubun);
         System.out.println("result = " + result);
     }
 
