@@ -1,14 +1,17 @@
 package ai.springmtcoding.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ai.springmtcoding.config.dummy.DummyObject;
+import ai.springmtcoding.domain.account.Account;
 import ai.springmtcoding.domain.account.AccountRepository;
 import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
+import ai.springmtcoding.handler.ex.CustomApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +54,10 @@ class AccountControllerTest extends DummyObject {
 
     private void dataSetting() {
         User test = userRepository.save(newUser("test", "테스터"));
+        User cos = userRepository.save(newUser("cos", "코스"));
+
+        Account testAccount1 = accountRepository.save(newAccount(1111L, test));
+        Account cosAccount = accountRepository.save(newAccount(2222L, cos));
 
 
     }
@@ -78,5 +85,24 @@ class AccountControllerTest extends DummyObject {
         System.out.println("responseBody = " + responseBody);
 
         resultActions.andExpect(status().isCreated());
+    }
+
+    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("deleteAccount_test")
+    public void deleteAccount_test() throws Exception {
+        Long number = 1111L;
+
+        ResultActions resultActions = mvc.perform(
+            delete("/api/s/account/" + number)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("responseBody = " + responseBody);
+
+        assertThrows(CustomApiException.class,
+            () -> accountRepository.findByNumber(number).orElseThrow(
+                () -> new CustomApiException("계좌를 찾을 수 없습니다.")
+            ));
     }
 }
