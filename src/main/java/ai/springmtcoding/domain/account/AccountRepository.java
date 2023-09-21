@@ -11,5 +11,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // TODO : 고객 관련 정보 가져와야하니.
     Optional<Account> findByNumber(Long number);
 
-    List<Account> findByUser_id(Long id);
+    List<Account> findByUserId(Long id);
 }

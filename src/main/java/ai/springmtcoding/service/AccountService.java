@@ -1,5 +1,6 @@
 package ai.springmtcoding.service;
 
+import ai.springmtcoding.config.auth.LoginUser;
 import ai.springmtcoding.domain.account.Account;
 import ai.springmtcoding.domain.account.AccountRepository;
 import ai.springmtcoding.domain.user.User;
@@ -11,8 +12,11 @@ import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +32,7 @@ public class AccountService {
             () -> new CustomApiException("고객을 찾을 수 없습니다.")
         );
 
-        List<Account> accountListPS = accountRepository.findByUser_id(userId);
+        List<Account> accountListPS = accountRepository.findByUserId(userId);
         return new AccountListRespDto(userPS, accountListPS);
     }
 
@@ -50,5 +54,16 @@ public class AccountService {
 
         // DTO 로 응답
         return new AccountSaveRespDto(accountPS);
+    }
+
+    @Transactional
+    public void accountDelete(Long number, Long userId) {
+        Account accountPS = accountRepository.findByNumber(number).orElseThrow(
+            () -> new CustomApiException("계좌를 찾을 수 없습니다.")
+        );
+
+        accountPS.checkOwner(userId);
+
+        accountRepository.deleteById(accountPS.getId());
     }
 }

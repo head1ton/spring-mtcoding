@@ -1,6 +1,7 @@
 package ai.springmtcoding.domain.account;
 
 import ai.springmtcoding.domain.user.User;
+import ai.springmtcoding.handler.ex.CustomApiException;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,5 +67,11 @@ public class Account {
         this.user = user;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void checkOwner(final Long userId) {
+        if (user.getId() != userId) {
+            throw new CustomApiException("계좌 소유자가 아닙니다.");
+        }
     }
 }

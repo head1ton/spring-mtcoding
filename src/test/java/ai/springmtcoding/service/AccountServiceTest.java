@@ -1,6 +1,7 @@
 package ai.springmtcoding.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +12,7 @@ import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
+import ai.springmtcoding.handler.ex.CustomApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -60,6 +62,20 @@ class AccountServiceTest extends DummyObject {
         System.out.println("responseBody = " + responseBody);
 
         assertThat(accountSaveRespDto.getNumber()).isEqualTo(1111L);
+    }
+
+    @Test
+    @DisplayName("account_delete_test")
+    public void account_delete_test() throws Exception {
+        Long number = 1111L;
+        Long userId = 2L;
+
+        User test = newMockUser(1L, "test", "테스터");
+        Account testAccount = newMockAccount(userId, number, 1000L, test);
+
+        when(accountRepository.findByNumber(any())).thenReturn(Optional.of(testAccount));
+
+        assertThrows(CustomApiException.class, () -> accountService.accountDelete(number, userId));
     }
 
 }

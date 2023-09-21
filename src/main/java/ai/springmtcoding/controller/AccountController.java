@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,16 @@ public class AccountController {
 
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌목록보기_고객별 성공", accountListRespDto),
             HttpStatus.OK);
+    }
+
+    @DeleteMapping("/s/account/{number}")
+    public ResponseEntity<?> deleteAccount(
+        @PathVariable Long number,
+        @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        accountService.accountDelete(number, loginUser.getUser().getId());
+
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌 삭제 완료", null), HttpStatus.OK);
     }
 
 }
