@@ -30,7 +30,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 4)
+    @Column(unique = true, nullable = false, length = 4)    // TODO : 나중에 수정
     private Long number;    // 계좌번호
 
     @Column(nullable = false, length = 4)
