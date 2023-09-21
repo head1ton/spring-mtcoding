@@ -37,7 +37,7 @@ public class AccountController {
         AccountSaveRespDto accountSaveRespDto = accountService.accountCreate(accountSaveReqDto,
             loginUser.getUser().getId());
 
-        return new ResponseEntity<>(new ResponseDto(1, "계좌등록 성공", accountSaveRespDto),
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌등록 성공", accountSaveRespDto),
             HttpStatus.CREATED);
     }
 
