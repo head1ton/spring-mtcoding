@@ -4,13 +4,11 @@ import ai.springmtcoding.domain.account.Account;
 import ai.springmtcoding.domain.account.AccountRepository;
 import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
+import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
 import java.util.Optional;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,41 +40,4 @@ public class AccountService {
         return new AccountSaveRespDto(accountPS);
     }
 
-    @Setter
-    @Getter
-    public static class AccountSaveRespDto {
-
-        private Long id;
-        private String username;
-        private Long number;
-        private Long balance;
-
-        public AccountSaveRespDto(Account account) {
-            this.id = account.getId();
-            this.username = account.getUser().getUsername();
-            this.number = account.getNumber();
-            this.balance = account.getBalance();
-        }
-    }
-
-    @Getter
-    @Setter
-    public static class AccountSaveReqDto {
-
-        @NotNull
-        @Digits(integer = 4, fraction = 4)
-        private Long number;
-        @NotNull
-        @Digits(integer = 4, fraction = 4)
-        private Long password;
-
-        public Account toEntity(User user) {
-            return Account.builder()
-                          .number(number)
-                          .password(password)
-                          .balance(1000L)
-                          .user(user)
-                          .build();
-        }
-    }
 }
