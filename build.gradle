@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.15'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'jacoco'
 }
 
 group = 'ai'
@@ -46,4 +47,61 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+
+//        xml.destination file("${buildDir}/jacoco/index.xml")
+//        csv.destination file("${buildDir}/jacoco/index.csv")
+        html.destination file("${buildDir}/jacoco/index.html")
+    }
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'METHOD'
+                value = 'COVEREDRATIO'
+                minimum = 0.0
+            }
+
+            excludes = [
+                    '*.config.*',
+                    '*.dto.*',
+                    '*.handler.*',
+                    '*.util.*',
+                    '*.domain.account.Account',
+                    '*.domain.transaction.Transaction',
+                    '*.domain.user.User',
+                    '*.service.AccountService',
+                    '*.service.TransactionService',
+                    '*.*Application',
+                    '*.*Enum',
+//					'*.*Exception',
+//					'*.*Advice',
+//					'*.*Config',
+//					'*.*Dto',
+//					'*.*Util',
+//					'*.*Filter',
+//					'*.*Object',
+//					'*.*Init',
+            ]
+        }
+        rule {
+
+        }
+    }
 }
