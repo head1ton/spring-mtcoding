@@ -21,7 +21,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 @Sql("classpath:db/teardown.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
