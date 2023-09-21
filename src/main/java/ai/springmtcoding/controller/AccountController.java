@@ -4,7 +4,7 @@ import ai.springmtcoding.config.auth.LoginUser;
 import ai.springmtcoding.dto.ResponseDto;
 import ai.springmtcoding.dto.account.AccountReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
-import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositRespDto;
+import ai.springmtcoding.dto.account.AccountRespDto.AccountDepositRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountListRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
