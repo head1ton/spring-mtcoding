@@ -154,7 +154,7 @@ public class AccountService {
 
     // 계좌 이체
     @Transactional
-    public AccountTransferRespDto accountWithdraw(
+    public AccountTransferRespDto accountTransfer(
         AccountTransferReqDto accountTransferReqDto,
         Long userId) {
 
