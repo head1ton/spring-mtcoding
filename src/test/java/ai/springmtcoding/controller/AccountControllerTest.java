@@ -10,6 +10,7 @@ import ai.springmtcoding.domain.account.Account;
 import ai.springmtcoding.domain.account.AccountRepository;
 import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -104,5 +105,28 @@ class AccountControllerTest extends DummyObject {
             () -> accountRepository.findByNumber(number).orElseThrow(
                 () -> new CustomApiException("계좌를 찾을 수 없습니다.")
             ));
+    }
+
+    @Test
+    @DisplayName("depositAccount_test")
+    public void depositAccount_test() throws Exception {
+        AccountDepositReqDto accountDepositReqDto = new AccountDepositReqDto();
+        accountDepositReqDto.setNumber(1111L);
+        accountDepositReqDto.setAmount(100L);
+        accountDepositReqDto.setGubun("DEPOSIT");
+        accountDepositReqDto.setTel("01088887777");
+
+        String requestBody = om.writeValueAsString(accountDepositReqDto);
+        System.out.println("requestBody = " + requestBody);
+
+        ResultActions resultActions = mvc.perform(
+            post("/api/account/deposit")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("responseBody = " + responseBody);
+
+        resultActions.andExpect(status().isCreated());
     }
 }
