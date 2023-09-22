@@ -33,6 +33,7 @@ public class TransactionService {
 
         List<Transaction> transactionListPS = transactionRepository.findTransactionList(
             accountPS.getId(), gubun, page);
+        System.out.println("transactionListPS = " + transactionListPS);
 
         return new TransactionListRespDto(transactionListPS, accountPS);
     }

@@ -36,9 +36,9 @@ public class TransactionRepositoryImpl implements Dao {
         } else if (gubun.equals("DEPOSIT")) {
             sql += "join fetch t.depositAccount da ";
             sql += "where t.depositAccount.id = :depositAccountId";
-        } else {
-            sql += "left join t.withdrawAccount wa ";
-            sql += "left join t.depositAccount da ";
+        } else { // gubun = ALL
+            sql += "left join t.withdrawAccount wa "; // 1,3,4,5
+            sql += "left join t.depositAccount da "; // 3,4,5
             sql += "where t.withdrawAccount.id = :withdrawAccountId ";
             sql += "or ";
             sql += "t.depositAccount.id = :depositAccountId";
@@ -55,7 +55,7 @@ public class TransactionRepositoryImpl implements Dao {
             query = query.setParameter("depositAccountId", accountId);
         }
 
-        query.setFirstResult(page * 5);
+        query.setFirstResult(page * 5); // 5, 10, 15
         query.setMaxResults(5);
 
         return query.getResultList();
