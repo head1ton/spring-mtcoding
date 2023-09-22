@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Document</title>
+</head>
+<body>
+<h1>로그인 페이지</h1>
+<hr>
+<form>
+  <input id="username" type="text"><br/>
+  <input id="password" type="password"><br/>
+  <button onclick="login()" type="button">로그인</button>
+</form>
+
+<script>
+  async function login() {
+    let userDto = {
+      username: document.querySelector("#username").value,
+      password: document.querySelector("#password").value
+    }
+    console.log(userDto);
+
+    let userJson = JSON.stringify(userDto);
+    console.log(userJson);
+
+    let r1 = await fetch("http://localhost:8081/api/login", {
+      method: "post",
+      body: userJson,
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8"
+      }
+    });
+    console.log("Authorization", r1.headers.get("Authorization"));
+    let token = r1.headers.get("Authorization");
+    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
+
+    let r2 = await r1.json();
+    console.log(r2);
+  }
+</script>
+
+</body>
+</html>
