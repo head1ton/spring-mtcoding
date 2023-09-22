@@ -12,6 +12,7 @@ import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountTransferReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountDepositRespDto;
+import ai.springmtcoding.dto.account.AccountRespDto.AccountDetailRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountListRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountTransferRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountWithdrawRespDto;
@@ -213,5 +214,21 @@ public class AccountService {
         // DTO 응답
         return new AccountTransferRespDto(withdrawAccountPS, transactionPS);
     }
+
+    public AccountDetailRespDto accountDetailView(Long number, Long userId, Integer page) {
+        String gubun = "ALL";
+
+        Account accountPS = accountRepository.findByNumber(number)
+                                             .orElseThrow(
+                                                 () -> new CustomApiException("계좌를 찾을 수 없습니다."));
+
+        accountPS.checkOwner(userId);
+
+        List<Transaction> transactionList = transactionRepository.findTransactionList(
+            accountPS.getId(), gubun, page);
+
+        return new AccountDetailRespDto(accountPS, transactionList);
+    }
+
 
 }
