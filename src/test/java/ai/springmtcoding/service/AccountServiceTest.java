@@ -14,6 +14,7 @@ import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountDepositRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
@@ -122,6 +123,29 @@ class AccountServiceTest extends DummyObject {
         assertThat(accountDepositRespDto.getTransaction().getDepositAccountBalance()).isEqualTo(
             1100L);
 
+    }
+
+    // 계좌출금 서비스
+    @Test
+    @DisplayName("accountWithdraw_test")
+    public void accountWithdraw_test() throws Exception {
+        Long amount = 100L;
+        Long password = 1234L;
+        Long userId = 1L;
+
+        User test = newMockUser(1L, "test", "테스터");
+        Account testAccount = newMockAccount(1L, 1111L, 1000L, test);
+
+        if (amount <= 0L) {
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        testAccount.checkOwner(userId);
+        testAccount.checkSamePassword(password);
+//        testAccount.checkBalance(amount);
+        testAccount.withdraw(amount);
+
+        assertThat(testAccount.getBalance()).isEqualTo(900L);
     }
 
 }
