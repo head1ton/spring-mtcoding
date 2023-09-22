@@ -9,9 +9,11 @@ import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountTransferReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountDepositRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountListRespDto;
+import ai.springmtcoding.dto.account.AccountRespDto.AccountTransferRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountWithdrawRespDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
@@ -148,6 +150,68 @@ public class AccountService {
 
         // DTO 응답
         return new AccountWithdrawRespDto(withdrawAccountPS, transactionPS);
+    }
+
+    // 계좌 이체
+    @Transactional
+    public AccountTransferRespDto accountWithdraw(
+        AccountTransferReqDto accountTransferReqDto,
+        Long userId) {
+
+        // 출금계좌와 입금계좌가 동일하면 안됨
+        if (accountTransferReqDto.getWithdrawNumber().longValue()
+            == accountTransferReqDto.getDepositNumber().longValue()) {
+            throw new CustomApiException("입출금 계좌가 동일할 수 없습니다.");
+        }
+
+        if (accountTransferReqDto.getAmount() <= 0L) {
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        // 출금계좌 확인
+        Account withdrawAccountPS = accountRepository.findByNumber(
+                                                         accountTransferReqDto.getWithdrawNumber())
+                                                     .orElseThrow(
+                                                         () -> new CustomApiException(
+                                                             "출금계좌를 찾을 수 없습니다."));
+
+        // 입금계좌 확인
+        Account depositAccountPS = accountRepository.findByNumber(
+                                                        accountTransferReqDto.getDepositNumber())
+                                                    .orElseThrow(
+                                                        () -> new CustomApiException(
+                                                            "입금계좌를 찾을 수 없습니다."));
+
+        // 출금 소유자 확인 (로그인한 사람과 동일한지)
+        withdrawAccountPS.checkOwner(userId);
+
+        // 출금 계좌 비밀번호 확인
+        withdrawAccountPS.checkSamePassword(accountTransferReqDto.getWithdrawNumber());
+
+        // 출금계좌 잔액 확인
+        withdrawAccountPS.checkBalance(accountTransferReqDto.getAmount());
+
+        // 이체하기
+        withdrawAccountPS.withdraw(accountTransferReqDto.getAmount());
+        depositAccountPS.deposit(accountTransferReqDto.getAmount());
+
+        // 거래 내역 남기기
+        Transaction transaction = Transaction.builder()
+                                             .withdrawAccount(withdrawAccountPS)
+                                             .depositAccount(depositAccountPS)
+                                             .withdrawAccountBalance(withdrawAccountPS.getBalance())
+                                             .depositAccountBalance(depositAccountPS.getBalance())
+                                             .amount(accountTransferReqDto.getAmount())
+                                             .gubun(TransactionEnum.TRANSFER)
+                                             .sender(accountTransferReqDto.getWithdrawNumber() + "")
+                                             .receiver(
+                                                 accountTransferReqDto.getDepositNumber() + "")
+                                             .build();
+
+        Transaction transactionPS = transactionRepository.save(transaction);
+
+        // DTO 응답
+        return new AccountTransferRespDto(withdrawAccountPS, transactionPS);
     }
 
 }
