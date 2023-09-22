@@ -4,10 +4,12 @@ import ai.springmtcoding.config.auth.LoginUser;
 import ai.springmtcoding.dto.ResponseDto;
 import ai.springmtcoding.dto.account.AccountReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountTransferReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountDepositRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountListRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
+import ai.springmtcoding.dto.account.AccountRespDto.AccountTransferRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountWithdrawRespDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
 import ai.springmtcoding.service.AccountService;
@@ -76,7 +78,7 @@ public class AccountController {
             HttpStatus.CREATED);
     }
 
-    @PostMapping("/account/withdraw")
+    @PostMapping("/s/account/withdraw")
     public ResponseEntity<?> withdrawAccount(
         @RequestBody @Valid AccountWithdrawReqDto accountWithdrawReqDto,
         BindingResult bindingResult,
@@ -84,6 +86,18 @@ public class AccountController {
         AccountWithdrawRespDto accountWithdrawRespDto = accountService.accountWithdraw(
             accountWithdrawReqDto, loginUser.getUser().getId());
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌 출금 완료", accountWithdrawRespDto),
+            HttpStatus.CREATED);
+    }
+
+    @PostMapping("/s/account/transfer")
+    public ResponseEntity<?> transferAccount(
+        @RequestBody @Valid AccountTransferReqDto accountTransferReqDto,
+        BindingResult bindingResult,
+        @AuthenticationPrincipal LoginUser loginUser) {
+        AccountTransferRespDto accountTransferRespDto = accountService.accountTransfer(
+            accountTransferReqDto, loginUser.getUser().getId());
+
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌 이체 완료", accountTransferRespDto),
             HttpStatus.CREATED);
     }
 

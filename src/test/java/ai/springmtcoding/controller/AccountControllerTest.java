@@ -12,6 +12,7 @@ import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountTransferReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -145,7 +146,32 @@ class AccountControllerTest extends DummyObject {
         System.out.println("requestBody = " + requestBody);
 
         ResultActions resultActions = mvc.perform(
-            post("/api/account/withdraw")
+            post("/api/s/account/withdraw")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("responseBody = " + responseBody);
+
+        resultActions.andExpect(status().isCreated());
+    }
+
+    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("transferAccount_test")
+    public void transferAccount_test() throws Exception {
+        AccountTransferReqDto accountTransferReqDto = new AccountTransferReqDto();
+        accountTransferReqDto.setWithdrawNumber(1111L);
+        accountTransferReqDto.setDepositNumber(2222L);
+        accountTransferReqDto.setWithdrawPassword(1234L);
+        accountTransferReqDto.setAmount(100L);
+        accountTransferReqDto.setGubun("TRANSFER");
+
+        String requestBody = om.writeValueAsString(accountTransferReqDto);
+        System.out.println("requestBody = " + requestBody);
+
+        ResultActions resultActions = mvc.perform(
+            post("/api/s/account/transfer")
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
