@@ -12,6 +12,7 @@ import ai.springmtcoding.domain.user.User;
 import ai.springmtcoding.domain.user.UserRepository;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountSaveReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.persistence.EntityManager;
@@ -121,6 +122,30 @@ class AccountControllerTest extends DummyObject {
 
         ResultActions resultActions = mvc.perform(
             post("/api/account/deposit")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("responseBody = " + responseBody);
+
+        resultActions.andExpect(status().isCreated());
+    }
+
+    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("withdrawAccount_test")
+    public void withdrawAccount_test() throws Exception {
+        AccountWithdrawReqDto accountWithdrawReqDto = new AccountWithdrawReqDto();
+        accountWithdrawReqDto.setNumber(1111L);
+        accountWithdrawReqDto.setPassword(1234L);
+        accountWithdrawReqDto.setAmount(100L);
+        accountWithdrawReqDto.setGubun("WITHDRAW");
+
+        String requestBody = om.writeValueAsString(accountWithdrawReqDto);
+        System.out.println("requestBody = " + requestBody);
+
+        ResultActions resultActions = mvc.perform(
+            post("/api/account/withdraw")
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );

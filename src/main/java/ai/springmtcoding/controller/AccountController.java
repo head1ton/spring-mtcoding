@@ -4,9 +4,11 @@ import ai.springmtcoding.config.auth.LoginUser;
 import ai.springmtcoding.dto.ResponseDto;
 import ai.springmtcoding.dto.account.AccountReqDto;
 import ai.springmtcoding.dto.account.AccountReqDto.AccountDepositReqDto;
+import ai.springmtcoding.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountDepositRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountListRespDto;
 import ai.springmtcoding.dto.account.AccountRespDto.AccountSaveRespDto;
+import ai.springmtcoding.dto.account.AccountRespDto.AccountWithdrawRespDto;
 import ai.springmtcoding.handler.ex.CustomApiException;
 import ai.springmtcoding.service.AccountService;
 import javax.validation.Valid;
@@ -71,6 +73,17 @@ public class AccountController {
         AccountDepositRespDto accountDepositRespDto = accountService.accountDeposit(
             accountDepositReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌 입금 완료", accountDepositRespDto),
+            HttpStatus.CREATED);
+    }
+
+    @PostMapping("/account/withdraw")
+    public ResponseEntity<?> withdrawAccount(
+        @RequestBody @Valid AccountWithdrawReqDto accountWithdrawReqDto,
+        BindingResult bindingResult,
+        @AuthenticationPrincipal LoginUser loginUser) {
+        AccountWithdrawRespDto accountWithdrawRespDto = accountService.accountWithdraw(
+            accountWithdrawReqDto, loginUser.getUser().getId());
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌 출금 완료", accountWithdrawRespDto),
             HttpStatus.CREATED);
     }
 
